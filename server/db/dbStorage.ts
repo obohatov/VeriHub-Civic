@@ -37,7 +37,7 @@ export class DbStorage implements IStorage {
   async getFactByKey(key: string, lang: Language): Promise<Fact | undefined> {
     const rows = await db.select().from(tables.factsTable)
       .where(eq(tables.factsTable.key, key));
-    const filtered = rows.filter(r => r.lang === lang);
+    const filtered = rows.filter((r: any) => r.lang === lang);
     return filtered[0] ? this.rowToFact(filtered[0]) : undefined;
   }
 
@@ -45,7 +45,7 @@ export class DbStorage implements IStorage {
     const rows = await db.select().from(tables.factsTable);
     const lowerQuery = query.toLowerCase();
     return rows
-      .filter(r => 
+      .filter((r: any) => 
         r.key.toLowerCase().includes(lowerQuery) ||
         r.value.toLowerCase().includes(lowerQuery) ||
         r.topic?.toLowerCase().includes(lowerQuery)

@@ -1,9 +1,6 @@
-import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
-import { pgTable, text as pgText, integer as pgInteger, real as pgReal, json as pgJson, timestamp as pgTimestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, real } from "drizzle-orm/pg-core";
 
-const isPostgres = process.env.DB_MODE === "postgres";
-
-export const factsTable = sqliteTable("facts", {
+export const factsTable = pgTable("facts", {
   id: text("id").primaryKey(),
   key: text("key").notNull(),
   lang: text("lang").notNull(),
@@ -14,7 +11,7 @@ export const factsTable = sqliteTable("facts", {
   topic: text("topic"),
 });
 
-export const questionSetsTable = sqliteTable("question_sets", {
+export const questionSetsTable = pgTable("question_sets", {
   id: text("id").primaryKey(),
   title: text("title").notNull(),
   languages: text("languages").notNull(),
@@ -22,7 +19,7 @@ export const questionSetsTable = sqliteTable("question_sets", {
   version: text("version").notNull(),
 });
 
-export const questionsTable = sqliteTable("questions", {
+export const questionsTable = pgTable("questions", {
   id: text("id").primaryKey(),
   questionSetId: text("question_set_id").notNull().references(() => questionSetsTable.id),
   lang: text("lang").notNull(),
@@ -32,7 +29,7 @@ export const questionsTable = sqliteTable("questions", {
   expectedFactKeys: text("expected_fact_keys").notNull(),
 });
 
-export const auditRunsTable = sqliteTable("audit_runs", {
+export const auditRunsTable = pgTable("audit_runs", {
   id: text("id").primaryKey(),
   questionSetId: text("question_set_id").notNull().references(() => questionSetsTable.id),
   createdAt: text("created_at").notNull(),
@@ -41,7 +38,7 @@ export const auditRunsTable = sqliteTable("audit_runs", {
   baselineRunId: text("baseline_run_id"),
 });
 
-export const answersTable = sqliteTable("answers", {
+export const answersTable = pgTable("answers", {
   id: text("id").primaryKey(),
   auditRunId: text("audit_run_id").notNull().references(() => auditRunsTable.id),
   questionId: text("question_id").notNull().references(() => questionsTable.id),
@@ -50,7 +47,7 @@ export const answersTable = sqliteTable("answers", {
   citations: text("citations").notNull(),
 });
 
-export const findingsTable = sqliteTable("findings", {
+export const findingsTable = pgTable("findings", {
   id: text("id").primaryKey(),
   auditRunId: text("audit_run_id").notNull().references(() => auditRunsTable.id),
   questionId: text("question_id").notNull().references(() => questionsTable.id),

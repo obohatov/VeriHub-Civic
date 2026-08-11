@@ -7,6 +7,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LanguageBadge } from "@/components/language-badge";
 import { LoadingState } from "@/components/loading-state";
 import { EmptyState } from "@/components/empty-state";
@@ -26,6 +27,7 @@ const riskTagColors: Record<string, string> = {
 
 export default function QuestionSets() {
   const [expandedSets, setExpandedSets] = useState<Set<string>>(new Set());
+  const [activeLang, setActiveLang] = useState<"all" | "fr" | "nl">("all");
 
   const { data: questionSets, isLoading: setsLoading } = useQuery<QuestionSet[]>(
     {
@@ -72,6 +74,27 @@ export default function QuestionSets() {
         </p>
       </div>
 
+      <Tabs
+        value={activeLang}
+        onValueChange={(value) => {
+          const nextLang = value as "all" | "fr" | "nl";
+          setActiveLang(nextLang);
+
+          if (nextLang === "all") {
+            setExpandedSets(new Set());
+          } else {
+            setExpandedSets(new Set(questionSets?.map((qs) => qs.id) || []));
+          }
+        }}
+        className="w-full"
+      >
+        <TabsList className="w-full justify-start">
+          <TabsTrigger value="all">All</TabsTrigger>
+          <TabsTrigger value="fr">FR</TabsTrigger>
+          <TabsTrigger value="nl">NL</TabsTrigger>
+        </TabsList>
+      </Tabs>
+
       <div className="space-y-4">
         {questionSets.map((qs) => {
           const setQuestions = questions?.filter(
@@ -86,6 +109,10 @@ export default function QuestionSets() {
               return acc;
             },
             {} as Record<string, Question[]>
+          );
+
+          const visibleLangs = qs.languages.filter(
+            (lang) => activeLang === "all" || lang === activeLang
           );
 
           return (
@@ -106,18 +133,20 @@ export default function QuestionSets() {
                         <div>
                           <CardTitle className="text-lg">{qs.title}</CardTitle>
                           <p className="mt-1 text-sm text-muted-foreground">
-                            Version {qs.version} • {setQuestions?.length || 0}{" "}
-                            questions
+                            Version {qs.version} • {setQuestions?.length || 0} questions
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {activeLang === "all" ? (
+                              <>
+                                {setQuestions?.filter((q) => activeLang === "all" || q.lang === activeLang).length || 0} questions · {setQuestions?.filter((q) => q.lang === "fr").length || 0} FR · {setQuestions?.filter((q) => q.lang === "nl").length || 0} NL
+                              </>
+                            ) : activeLang === "fr" ? (
+                              <>{setQuestions?.filter((q) => q.lang === "fr").length || 0} FR questions</>
+                            ) : (
+                              <>{setQuestions?.filter((q) => q.lang === "nl").length || 0} NL questions</>
+                            )}
                           </p>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {qs.languages.map((lang) => (
-                          <LanguageBadge
-                            key={lang}
-                            lang={lang}
-                          />
-                        ))}
                       </div>
                     </div>
                     {qs.topics.length > 0 && (
@@ -133,7 +162,7 @@ export default function QuestionSets() {
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <CardContent className="border-t pt-4">
-                    {qs.languages.map((lang) => {
+                    {visibleLangs.map((lang) => {
                       const langQuestions = questionsByLang?.[lang] || [];
                       if (langQuestions.length === 0) return null;
 

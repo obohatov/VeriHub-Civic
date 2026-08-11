@@ -1,325 +1,91 @@
-# VeriHub Civic — LLM Audit & Drift Dashboard
+# VeriHub — LLM Public-Information Audit
 
-A full-stack dashboard that helps public-facing organizations measure what LLMs say about key civic services in French (FR) and Dutch (NL). The application detects issues such as incorrect information, outdated content, ungrounded claims, and FR↔NL drift, and shows measurable "before/after" improvement after updating a verified Facts & Sources Hub.
+> **Regression testing for public information in the AI era.**
+
+VeriHub audits what public LLMs (ChatGPT, Gemini, Claude) say about an organization, checking their answers against the organization's **official sources** — across languages. The live demo audits a public model on **STIB-MIVB** (the Brussels public-transport operator) in **French and Dutch**.
 
 ## Why this matters
 
-LLM answers scale. A single outdated link, wrong phone number, missing deadline, or inconsistent FR/NL instruction can propagate across thousands of interactions and cause real-world harm: missed deadlines, incorrect submissions, extra helpdesk load, and loss of trust.
+LLM answers scale. A single wrong fare, outdated fine amount, or missing deadline can propagate across thousands of interactions and cause real harm: incorrect payments, missed deadlines, extra helpdesk load, and loss of trust. Organizations have no systematic way to know *what the AI says about them* — VeriHub turns "the AI said something wrong" into a measurable, sourced audit.
 
-VeriHub Civic turns "AI said something wrong" into a measurable operational loop:
-1. Run recurring audits with realistic question sets (per language)
-2. Produce an actionable issue map
-3. Fix verified facts / sources
-4. Re-run the audit and measure before/after
+## What the demo does
 
-## Features
+1. **Facts & Sources Hub** — verified facts drawn from official STIB-MIVB pages (FR/NL), each with its source URL and verification date.
+2. **Question set** — paired FR/NL questions, one per fact (fares, fines, MOBIB card, lost & found, school passes).
+3. **Audit run** — a real public model (`gpt-4o-mini`) answers every question, with no access to the sources — exactly as a citizen would ask it.
+4. **LLM judge** — a stronger model (`gpt-4o`) compares each answer to the official verified value and returns a verdict — *correct / incorrect / ungrounded* — with a human-readable reason (e.g. *"Answer says 7.60 EUR but the official value is 8.50 EUR"*).
+5. **Dashboard** — findings by type, severity, and language.
 
-- **Dashboard**: Overview with metrics, finding counts by type/severity/language
-- **Facts Hub**: CRUD operations for verified facts with FR/NL pairs
-- **Question Sets**: Pre-defined question sets for auditing LLM responses
-- **Audit Runs**: Execute audits with different LLM providers (mock-baseline, mock-after, openai)
-- **Findings Detection**: Automatic detection of incorrect, outdated, ungrounded, and drift issues
-- **Before/After Comparison**: Compare two audit runs to see improvements
+The judge replaces brittle regex scoring: instead of matching strings, it reasons about whether the model's answer actually contradicts the official fact.
 
-## Tech Stack
+## Latest audit results (STIB-MIVB, FR/NL)
 
-- **Frontend**: React + TypeScript + Vite + TailwindCSS + shadcn/ui
-- **Backend**: Express.js + TypeScript
-- **Database**: SQLite (development) / PostgreSQL (production)
-- **ORM**: Drizzle ORM
-- **State Management**: TanStack Query (React Query)
-- **Routing**: Wouter
+A single audit of `gpt-4o-mini` over 32 paired FR/NL questions:
 
-## Quick Start
+| Finding type | Count |
+|---|---|
+| **Incorrect** (contradicts the official value) | 15 |
+| **Ungrounded** (no concrete value / no source) | 13 |
+| **Total** | 28 |
 
-### Local Development
+Representative findings:
+- Ticket validity: the model answered *60 minutes*; the official value is *18 months* (confused validity with the transfer window).
+- Fine amount: the model answered *70 EUR*; the official first-offence fine is *107 EUR*.
+- The model repeatedly hedged with *"as of my last update in October 2023"* — a direct illustration of stale AI knowledge about a real operator.
+
+## Architecture
+
+```
+Question (FR/NL)  ──►  Audited model (gpt-4o-mini, no context)  ──►  Answer
+                                                                       │
+Official fact (STIB source)  ──►  LLM judge (gpt-4o)  ◄─────────────────┘
+                                        │
+                                     Finding (type · severity · reason)
+```
+
+- **Provider layer** sends the bare question to the audited model (mirrors real citizen usage).
+- **Judge layer** scores the answer against the verified fact; a cheap exact-match precheck short-circuits obvious correct answers before calling the judge (hybrid evaluation).
+- **Findings** feed the dashboard in a stable schema.
+
+## Tech stack
+
+- **Frontend:** React + TypeScript + Vite + TailwindCSS + shadcn/ui, TanStack Query
+- **Backend:** Express + TypeScript, Drizzle ORM
+- **Database:** PostgreSQL (Railway, EU / Amsterdam region)
+- **AI:** OpenAI — `gpt-4o` judge, `gpt-4o-mini` audited model
+
+## Live demo
+
+**[deployment URL — to be added]**
+
+## Quick start
 
 ```bash
-# Install dependencies
 npm install
 
-# Run development server
-npm run dev
+# Postgres + real audit (requires OPENAI_API_KEY and DATABASE_URL)
+DB_MODE=postgres DATABASE_URL="postgres://..." OPENAI_API_KEY="sk-..." npm run dev
 ```
 
-The application will be available at http://localhost:5000
+Open http://localhost:5000 and start an audit run from the **Audit Runs** page (select the `openai` provider).
 
-### Running Tests
+## Tests
 
 ```bash
-# Run all backend tests
-npx vitest run
-
-# Run unit tests only
-npx vitest run server/tests/unit
-
-# Run integration tests only
-npx vitest run server/tests/integration
-
-# Run frontend tests
-npx vitest run --config vitest.config.frontend.ts
-
-# Watch mode
-npx vitest
+npx vitest run                         # all
+npx vitest run server/tests/unit       # unit
+npx vitest run server/tests/integration # integration
 ```
 
-### Docker Deployment
+## Roadmap — target product
 
-```bash
-# Build and run with docker-compose
-docker compose up --build
+This demo is a working **vertical slice**. The full product (separate repository, Python/FastAPI) extends it with:
 
-# Access the application at http://localhost
-```
+- **RAG-powered Hub** — automated ingestion & retrieval of official sources. Working prototype: [stib-rag-assistant](https://github.com/obohatov/stib-rag-assistant)
+- **Run matrix** — multiple providers × languages × repetitions
+- **FR/NL drift & instability** detection across repeated runs
+- **Human review queue** and before/after remediation reports
 
-## Project Structure
+## Data & sources
 
-```
-├── client/                 # Frontend React application
-│   ├── public/data/sources # Verified markdown sources
-│   └── src/
-│       ├── components/     # Reusable UI components
-│       ├── pages/          # Page components
-│       └── lib/            # Utilities and types
-├── server/                 # Backend Express application
-│   ├── db/                 # Database schema and connection
-│   ├── loaders/            # Artifact loaders (JSON/YAML)
-│   ├── services/           # Business logic
-│   └── tests/              # Unit and integration tests
-│       ├── unit/
-│       └── integration/
-├── shared/                 # Shared TypeScript types
-├── data/                   # Data artifacts
-│   ├── facts/              # Facts seed data
-│   ├── mock/               # Mock LLM answers
-│   ├── question_sets/      # Question set definitions
-│   └── scoring_rules.yaml  # Scoring configuration
-├── openapi.yaml            # OpenAPI 3.1 specification
-└── docs/                   # Documentation
-```
-
-## Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `PORT` | Server port | `5000` |
-| `DB_MODE` | Database mode (`sqlite` or `postgres`) | `sqlite` |
-| `DATABASE_URL` | PostgreSQL connection URL | - |
-| `OPENAI_API_KEY` | OpenAI API key (optional) | - |
-
-## API Documentation
-
-OpenAPI specification is available at `openapi.yaml`.
-
-### Key Endpoints
-
-- `GET /api/dashboard/metrics` - Dashboard metrics
-- `GET /api/facts` - List all facts
-- `POST /api/facts` - Create a fact
-- `GET /api/question-sets` - List question sets
-- `GET /api/audit-runs` - List audit runs
-- `POST /api/audit-runs` - Create audit run
-- `GET /api/audit-runs/:id/findings` - Get findings for run
-- `GET /api/comparison/:baselineId/:currentId` - Compare two runs
-
-## Data Artifacts
-
-### Facts Seed (`data/facts/facts_seed_v2.json`)
-28 facts with FR/NL pairs covering:
-- Appointment links
-- Contact information (phone, email, address)
-- Opening hours
-- Deadline days
-- Fees and payment methods
-- Required documents
-
-### Question Set (`data/question_sets/question_set_demoville_fr_nl_v2.json`)
-26 questions (13 FR, 13 NL) covering various civic service topics.
-
-### Mock LLM Answers
-- `mock_llm_answers_baseline.json` - Initial answers with issues
-- `mock_llm_answers_after.json` - Improved answers after fact updates
-
-### Scoring Rules (`data/scoring_rules.yaml`)
-Configuration for:
-- Risk weights by category
-- Outdated detection threshold (180 days)
-- Citation markers for grounded checks
-- Drift detection patterns
-
-## LLM Providers
-
-### mock-baseline
-Returns pre-defined answers with intentional issues (incorrect values, missing citations, etc.)
-
-### mock-after
-Returns improved answers that match verified facts better.
-
-### openai (not implemented)
-Placeholder for real OpenAI integration.
-
-## Deployment
-
-### Render/Fly.io/Railway
-
-1. Set environment variables:
-   - `DB_MODE=postgres`
-   - `DATABASE_URL=<your-postgres-url>`
-
-2. Build command: `npm run build`
-
-3. Start command: `npm run start`
-
-### Docker
-
-```bash
-docker compose up --build
-```
-
-## Configuration
-
-Copy `.env.example` to `.env` and adjust as needed:
-
-```bash
-cp .env.example .env
-```
-
-| Variable | Description | Default | Required |
-|----------|-------------|---------|----------|
-| `PORT` | Server port | `5000` | No |
-| `DB_MODE` | Database mode (`sqlite` or `postgres`) | `sqlite` | No |
-| `DATABASE_URL` | PostgreSQL connection URL | - | Yes (if `DB_MODE=postgres`) |
-| `MCP_PORT` | MCP tool server port | `3001` | No |
-| `OPENAI_API_KEY` | OpenAI API key | - | No (only for `openai` provider) |
-
-The application validates required environment variables at startup and provides clear error messages if any are missing.
-
-## CI/CD
-
-GitHub Actions workflow (`.github/workflows/ci.yml`) runs:
-1. TypeScript check
-2. OpenAPI specification validation (`npx @redocly/cli lint openapi.yaml`)
-3. Unit tests (`npx vitest run server/tests/unit`)
-4. Integration tests (`npx vitest run server/tests/integration`)
-5. Frontend tests (`npx vitest run --config vitest.config.frontend.ts`)
-6. Build
-
-## MCP Tool Server
-
-VeriHub Civic includes a minimal MCP-style tool server that exposes two tools for programmatic access:
-
-### Available Tools
-
-1. **search_facts** - Search verified facts in the database
-   - `query` (required): Search query string
-   - `lang` (optional): Filter by language (`fr` or `nl`)
-
-2. **list_findings** - List findings from an audit run
-   - `run_id` (required): Audit run ID
-   - `type` (optional): Filter by finding type (`incorrect`, `outdated`, `ungrounded`, `drift`)
-   - `min_severity` (optional): Minimum severity threshold (0-1)
-
-### Starting the MCP Server
-
-```bash
-# Start MCP server (default port 3001)
-npx tsx server/mcp/index.ts
-
-# Or with custom port
-MCP_PORT=3002 npx tsx server/mcp/index.ts
-```
-
-### Example Requests
-
-```bash
-# List available tools
-curl http://localhost:3001/tools
-
-# Search facts
-curl -X POST http://localhost:3001/tools/search_facts \
-  -H "Content-Type: application/json" \
-  -d '{"query": "phone", "lang": "fr"}'
-
-# List findings for a run
-curl -X POST http://localhost:3001/tools/list_findings \
-  -H "Content-Type: application/json" \
-  -d '{"run_id": "run-123", "type": "incorrect", "min_severity": 0.5}'
-
-# Health check
-curl http://localhost:3001/health
-```
-
-### MCP Integration Potential
-
-The tool server enables:
-- Real-time fact verification from external sources
-- Multi-model LLM comparison
-- Integration with document management systems
-- Automated fact updates from trusted sources
-
-## 3-Minute Demo Script
-
-1. **Dashboard**: Show latest metrics and overview of findings
-2. **Question Sets**: Show FR/NL pairs and risk tags
-3. **Audit Runs**: Start a new run (baseline)
-4. **Findings**: Filter by type (incorrect/ungrounded/drift)
-5. **Facts Hub**: Open a fact and click sourceRef
-6. **Run again (after)**: Show comparison page
-7. **Close**: "This is regression testing for public information in the AI era"
-
-## Contributing
-
-## API endpoints (current)
-
-```text
-GET    /api/dashboard/metrics
-GET    /api/facts
-GET    /api/facts/search?q=...
-GET    /api/facts/:id
-POST   /api/facts
-PUT    /api/facts/:id
-DELETE /api/facts/:id
-GET    /api/question-sets
-GET    /api/questions
-GET    /api/audit-runs
-POST   /api/audit-runs
-GET    /api/audit-runs/:id
-GET    /api/audit-runs/:id/findings
-GET    /api/findings
-GET    /api/comparison/:baselineId/:currentId
-```
-
----
-
-## 3-minute demo script (quick)
-
-1. **Dashboard**: show latest metrics and overview of findings.  
-2. **Question Sets**: show FR/NL pairs and risk tags.  
-3. **Audit Runs**: start a new run (baseline).  
-4. **Findings**: filter by type (incorrect / ungrounded / drift) and open 1–2 findings.  
-5. **Facts Hub**: open a fact and click `sourceRef` (opens `/data/sources/...`).  
-6. **Run again (after)**: show comparison page (resolved findings, counts drop).  
-7. **Close**: “This is regression testing for public information in the AI era.”
-
-Full script: see `docs/demo_script_3min.md`.
-
----
-
-## Screenshots
-
-### Dashboard — key metrics and severity overview
-![Dashboard view showing total findings, critical issues, FR/NL drift, and severity distribution](docs/screenshots/dashboard.png)
-
-The dashboard summarizes the most recent audit results: total findings across runs, critical issues (severity 8–10), FR/NL drift count, and a severity distribution breakdown.
-
-### Findings — actionable issue list with suggested fixes
-![Findings view showing filters, issue cards, and suggested fixes for incorrect answers and FR/NL drift](docs/screenshots/findings.png)
-
-The findings page provides a filterable list of detected issues (incorrect, outdated, ungrounded, FR/NL drift). Each item includes evidence (expected vs actual) and a suggested fix to reduce real-world harm (wrong fees, outdated links, inconsistent procedures across languages).
-
----
-
-
-## License
-
-MIT
+Facts are sourced from official STIB-MIVB pages (FR/NL versions), snapshotted with source URLs and verification dates. STIB is used as a realistic public-organization example; VeriHub is not affiliated with STIB-MIVB.

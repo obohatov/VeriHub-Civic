@@ -1,6 +1,7 @@
 import { storage } from "../storage";
 import { createLlmProvider } from "./mockLlm";
 import { scoreAnswer } from "./scoring";
+import { judgeScoreAnswer } from "./judgeLlm";
 import { detectDrift } from "./drift";
 import type { AuditRun, Answer, InsertAnswer, Provider } from "@shared/schema";
 
@@ -34,7 +35,9 @@ export async function runAudit(auditRunId: string): Promise<void> {
       const answer = await storage.createAnswer(answerData);
       answers.push(answer);
 
-      const scoringResult = scoreAnswer(question, response, facts, auditRunId);
+      const scoringResult = auditRun.provider === "openai"
+        ? await judgeScoreAnswer(question, response, facts, auditRunId)
+        : scoreAnswer(question, response, facts, auditRunId);
       
       for (const finding of scoringResult.findings) {
         await storage.createFinding(finding);

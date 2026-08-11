@@ -1,264 +1,290 @@
 [
   {
-    "id": "fact_fr_appointment_link",
-    "key": "appointment_link",
+    "id": "fact_fr_ticket_validity",
+    "key": "ticket_validity",
     "lang": "fr",
-    "value": "https://demoville.example/book",
-    "source_ref": "data/sources/fr_appointments.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_nl_appointment_link"
+    "value": "18 mois",
+    "source_ref": "https://www.stib-mivb.be/accueil/support-client/tarifs-et-titres-de-transport",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_nl_ticket_validity"
   },
   {
-    "id": "fact_nl_appointment_link",
-    "key": "appointment_link",
+    "id": "fact_nl_ticket_validity",
+    "key": "ticket_validity",
     "lang": "nl",
-    "value": "https://demoville.example/afspraak",
-    "source_ref": "data/sources/nl_appointments.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_fr_appointment_link"
+    "value": "18 maanden",
+    "source_ref": "https://www.stib-mivb.be/startpagina/klantendienst/tarieven-en-vervoerbewijzen",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_fr_ticket_validity"
   },
   {
-    "id": "fact_fr_phone",
-    "key": "phone",
+    "id": "fact_fr_connection_window",
+    "key": "connection_window",
     "lang": "fr",
-    "value": "+32 2 555 0101",
-    "source_ref": "data/sources/fr_contact.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_nl_phone"
+    "value": "60 minutes",
+    "source_ref": "https://www.stib-mivb.be/accueil/support-client/tarifs-et-titres-de-transport",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_nl_connection_window"
   },
   {
-    "id": "fact_nl_phone",
-    "key": "phone",
+    "id": "fact_nl_connection_window",
+    "key": "connection_window",
     "lang": "nl",
-    "value": "+32 2 555 0102",
-    "source_ref": "data/sources/nl_contact.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_fr_phone"
+    "value": "60 minuten",
+    "source_ref": "https://www.stib-mivb.be/startpagina/klantendienst/tarieven-en-vervoerbewijzen",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_fr_connection_window"
   },
   {
-    "id": "fact_fr_email",
-    "key": "email",
+    "id": "fact_fr_day_cap_eur",
+    "key": "day_cap_eur",
     "lang": "fr",
-    "value": "info@demoville.example",
-    "source_ref": "data/sources/fr_contact.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_nl_email"
+    "value": "8,50 €",
+    "source_ref": "https://www.stib-mivb.be/accueil/support-client/tarifs-et-titres-de-transport",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_nl_day_cap_eur"
   },
   {
-    "id": "fact_nl_email",
-    "key": "email",
+    "id": "fact_nl_day_cap_eur",
+    "key": "day_cap_eur",
     "lang": "nl",
-    "value": "info@demoville.example",
-    "source_ref": "data/sources/nl_contact.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_fr_email"
+    "value": "€ 8,50",
+    "source_ref": "https://www.stib-mivb.be/startpagina/klantendienst/tarieven-en-vervoerbewijzen",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_fr_day_cap_eur"
   },
   {
-    "id": "fact_fr_deadline_days",
-    "key": "deadline_days",
+    "id": "fact_fr_mobib_validity",
+    "key": "mobib_validity",
     "lang": "fr",
-    "value": "8",
-    "source_ref": "data/sources/fr_service_residence.md",
-    "last_verified": "2025-06-01",
-    "linked_fact_id": "fact_nl_deadline_days"
+    "value": "5 ans",
+    "source_ref": "https://www.stib-mivb.be/acheter/tous-vos-deplacements-avec-la-carte-mobib",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_nl_mobib_validity"
   },
   {
-    "id": "fact_nl_deadline_days",
-    "key": "deadline_days",
+    "id": "fact_nl_mobib_validity",
+    "key": "mobib_validity",
     "lang": "nl",
-    "value": "10",
-    "source_ref": "data/sources/nl_service_residence.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_fr_deadline_days"
+    "value": "5 jaar",
+    "source_ref": "https://www.stib-mivb.be/kopen/al-je-verplaatsingen-met-de-mobib-kaart",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_fr_mobib_validity"
   },
-
   {
-    "id": "fact_fr_address",
-    "key": "address",
+    "id": "fact_fr_mobib_card_price",
+    "key": "mobib_card_price",
     "lang": "fr",
-    "value": "Rue Exemple 10, 1000 DemoVille",
-    "source_ref": "data/sources/fr_contact.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_nl_address"
+    "value": "6 €",
+    "source_ref": "https://www.stib-mivb.be/acheter/tous-vos-deplacements-avec-la-carte-mobib",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_nl_mobib_card_price"
   },
   {
-    "id": "fact_nl_address",
-    "key": "address",
+    "id": "fact_nl_mobib_card_price",
+    "key": "mobib_card_price",
     "lang": "nl",
-    "value": "Voorbeeldstraat 10, 1000 DemoVille",
-    "source_ref": "data/sources/nl_contact.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_fr_address"
+    "value": "€ 6",
+    "source_ref": "https://www.stib-mivb.be/kopen/al-je-verplaatsingen-met-de-mobib-kaart",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_fr_mobib_card_price"
   },
-
   {
-    "id": "fact_fr_opening_hours",
-    "key": "opening_hours",
+    "id": "fact_fr_mobib_capacity",
+    "key": "mobib_capacity",
     "lang": "fr",
-    "value": "Lun–Ven 08:30–16:30",
-    "source_ref": "data/sources/fr_appointments.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_nl_opening_hours"
+    "value": "8 titres",
+    "source_ref": "https://www.stib-mivb.be/acheter/tous-vos-deplacements-avec-la-carte-mobib",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_nl_mobib_capacity"
   },
   {
-    "id": "fact_nl_opening_hours",
-    "key": "opening_hours",
+    "id": "fact_nl_mobib_capacity",
+    "key": "mobib_capacity",
     "lang": "nl",
-    "value": "Ma–Vr 08:30–16:00",
-    "source_ref": "data/sources/nl_appointments.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_fr_opening_hours"
+    "value": "8 vervoerbewijzen",
+    "source_ref": "https://www.stib-mivb.be/kopen/al-je-verplaatsingen-met-de-mobib-kaart",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_fr_mobib_capacity"
   },
-
   {
-    "id": "fact_fr_appointment_required",
-    "key": "appointment_required",
+    "id": "fact_fr_fine_first",
+    "key": "fine_first",
     "lang": "fr",
-    "value": "yes",
-    "source_ref": "data/sources/fr_appointments.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_nl_appointment_required"
+    "value": "107 €",
+    "source_ref": "https://www.stib-mivb.be/accueil/support-client/amende-et-infractions-",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_nl_fine_first"
   },
   {
-    "id": "fact_nl_appointment_required",
-    "key": "appointment_required",
+    "id": "fact_nl_fine_first",
+    "key": "fine_first",
     "lang": "nl",
-    "value": "yes",
-    "source_ref": "data/sources/nl_appointments.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_fr_appointment_required"
+    "value": "€ 107",
+    "source_ref": "https://www.stib-mivb.be/startpagina/klantendienst/boete-of-inbreuken",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_fr_fine_first"
   },
-
   {
-    "id": "fact_fr_walk_in_allowed",
-    "key": "walk_in_allowed",
+    "id": "fact_fr_fine_second_24m",
+    "key": "fine_second_24m",
     "lang": "fr",
-    "value": "no",
-    "source_ref": "data/sources/fr_appointments.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_nl_walk_in_allowed"
+    "value": "214 €",
+    "source_ref": "https://www.stib-mivb.be/accueil/support-client/amende-et-infractions-",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_nl_fine_second_24m"
   },
   {
-    "id": "fact_nl_walk_in_allowed",
-    "key": "walk_in_allowed",
+    "id": "fact_nl_fine_second_24m",
+    "key": "fine_second_24m",
     "lang": "nl",
-    "value": "limited (Tue 09:00–12:00)",
-    "source_ref": "data/sources/nl_appointments.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_fr_walk_in_allowed"
+    "value": "€ 214",
+    "source_ref": "https://www.stib-mivb.be/startpagina/klantendienst/boete-of-inbreuken",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_fr_fine_second_24m"
   },
-
   {
-    "id": "fact_fr_processing_time_days",
-    "key": "processing_time_days",
+    "id": "fact_fr_fine_misuse_mobib",
+    "key": "fine_misuse_mobib",
     "lang": "fr",
-    "value": "5",
-    "source_ref": "data/sources/fr_service_residence.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_nl_processing_time_days"
+    "value": "408 €",
+    "source_ref": "https://www.stib-mivb.be/accueil/support-client/amende-et-infractions-",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_nl_fine_misuse_mobib"
   },
   {
-    "id": "fact_nl_processing_time_days",
-    "key": "processing_time_days",
+    "id": "fact_nl_fine_misuse_mobib",
+    "key": "fine_misuse_mobib",
     "lang": "nl",
-    "value": "5",
-    "source_ref": "data/sources/nl_service_residence.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_fr_processing_time_days"
+    "value": "€ 408",
+    "source_ref": "https://www.stib-mivb.be/startpagina/klantendienst/boete-of-inbreuken",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_fr_fine_misuse_mobib"
   },
-
   {
-    "id": "fact_fr_fee_eur",
-    "key": "fee_eur",
+    "id": "fact_fr_fine_unvalidated",
+    "key": "fine_unvalidated",
     "lang": "fr",
-    "value": "10",
-    "source_ref": "data/sources/fr_service_residence.md",
-    "last_verified": "2025-06-01",
-    "linked_fact_id": "fact_nl_fee_eur"
+    "value": "10 €",
+    "source_ref": "https://www.stib-mivb.be/accueil/support-client/amende-et-infractions-",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_nl_fine_unvalidated"
   },
   {
-    "id": "fact_nl_fee_eur",
-    "key": "fee_eur",
+    "id": "fact_nl_fine_unvalidated",
+    "key": "fine_unvalidated",
     "lang": "nl",
-    "value": "10",
-    "source_ref": "data/sources/nl_service_residence.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_fr_fee_eur"
+    "value": "€ 10",
+    "source_ref": "https://www.stib-mivb.be/startpagina/klantendienst/boete-of-inbreuken",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_fr_fine_unvalidated"
   },
-
   {
-    "id": "fact_fr_payment_methods",
-    "key": "payment_methods",
+    "id": "fact_fr_duplicate_card_cost",
+    "key": "duplicate_card_cost",
     "lang": "fr",
-    "value": "Carte, Bancontact",
-    "source_ref": "data/sources/fr_service_residence.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_nl_payment_methods"
+    "value": "10 €",
+    "source_ref": "https://www.stib-mivb.be/accueil/support-client/objets-perdus",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_nl_duplicate_card_cost"
   },
   {
-    "id": "fact_nl_payment_methods",
-    "key": "payment_methods",
+    "id": "fact_nl_duplicate_card_cost",
+    "key": "duplicate_card_cost",
     "lang": "nl",
-    "value": "Kaart, Bancontact",
-    "source_ref": "data/sources/nl_service_residence.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_fr_payment_methods"
+    "value": "€ 10",
+    "source_ref": "https://www.stib-mivb.be/startpagina/klantendienst/verloren-voorwerpen",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_fr_duplicate_card_cost"
   },
-
   {
-    "id": "fact_fr_documents_list",
-    "key": "documents_list",
+    "id": "fact_fr_duplicate_delivery_days",
+    "key": "duplicate_delivery_days",
     "lang": "fr",
-    "value": "Carte d'identité; Preuve d'adresse (bail/facture); Formulaire signé",
-    "source_ref": "data/sources/fr_service_residence.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_nl_documents_list"
+    "value": "5 jours ouvrables",
+    "source_ref": "https://www.stib-mivb.be/accueil/support-client/objets-perdus",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_nl_duplicate_delivery_days"
   },
   {
-    "id": "fact_nl_documents_list",
-    "key": "documents_list",
+    "id": "fact_nl_duplicate_delivery_days",
+    "key": "duplicate_delivery_days",
     "lang": "nl",
-    "value": "Identiteitskaart; Bewijs van adres (huurcontract/factuur); Ondertekend formulier",
-    "source_ref": "data/sources/nl_service_residence.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_fr_documents_list"
+    "value": "5 werkdagen",
+    "source_ref": "https://www.stib-mivb.be/startpagina/klantendienst/verloren-voorwerpen",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_fr_duplicate_delivery_days"
   },
-
   {
-    "id": "fact_fr_form_url",
-    "key": "form_url",
+    "id": "fact_fr_school_ticket_price",
+    "key": "school_ticket_price",
     "lang": "fr",
-    "value": "https://demoville.example/forms/residence.pdf",
-    "source_ref": "data/sources/fr_service_residence.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_nl_form_url"
+    "value": "12 €/an",
+    "source_ref": "https://www.stib-mivb.be/acheter/abonnements-scolaires-pour-eleves-et-etudiants",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_nl_school_ticket_price"
   },
   {
-    "id": "fact_nl_form_url",
-    "key": "form_url",
+    "id": "fact_nl_school_ticket_price",
+    "key": "school_ticket_price",
     "lang": "nl",
-    "value": "https://demoville.example/formulieren/verblijf.pdf",
-    "source_ref": "data/sources/nl_service_residence.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_fr_form_url"
+    "value": "€ 12/jaar",
+    "source_ref": "https://www.stib-mivb.be/kopen/schoolabonnementen-voor-leerlingen-en-studenten",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_fr_school_ticket_price"
   },
-
   {
-    "id": "fact_fr_eligibility_criteria",
-    "key": "eligibility_criteria",
+    "id": "fact_fr_airport_fare",
+    "key": "airport_fare",
     "lang": "fr",
-    "value": "Réservé aux personnes enregistrées à DemoVille; une pièce d'identité valide est requise.",
-    "source_ref": "data/sources/fr_service_residence.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_nl_eligibility_criteria"
+    "value": "7,90 €",
+    "source_ref": "https://www.stib-mivb.be/acheter/votre-carte-bancaire-est-votre-ticket",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_nl_airport_fare"
   },
   {
-    "id": "fact_nl_eligibility_criteria",
-    "key": "eligibility_criteria",
+    "id": "fact_nl_airport_fare",
+    "key": "airport_fare",
     "lang": "nl",
-    "value": "Alleen voor inwoners die in DemoVille ingeschreven zijn; geldige identiteitskaart vereist.",
-    "source_ref": "data/sources/nl_service_residence.md",
-    "last_verified": "2026-01-10",
-    "linked_fact_id": "fact_fr_eligibility_criteria"
+    "value": "€ 7,90",
+    "source_ref": "https://www.stib-mivb.be/kopen/je-bankkaart-is-je-ticket",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_fr_airport_fare"
+  },
+  {
+    "id": "fact_fr_digital_1journey",
+    "key": "digital_1journey",
+    "lang": "fr",
+    "value": "2,70 €",
+    "source_ref": "https://www.stib-mivb.be/acheter/le-ticket-digital",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_nl_digital_1journey"
+  },
+  {
+    "id": "fact_nl_digital_1journey",
+    "key": "digital_1journey",
+    "lang": "nl",
+    "value": "€ 2,70",
+    "source_ref": "https://www.stib-mivb.be/kopen/het-digitale-ticket",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_fr_digital_1journey"
+  },
+  {
+    "id": "fact_fr_senior_reduced_age",
+    "key": "senior_reduced_age",
+    "lang": "fr",
+    "value": "65 ans ou plus",
+    "source_ref": "https://www.stib-mivb.be/accueil/support-client/tarifs-preferentiels",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_nl_senior_reduced_age"
+  },
+  {
+    "id": "fact_nl_senior_reduced_age",
+    "key": "senior_reduced_age",
+    "lang": "nl",
+    "value": "65 jaar of ouder",
+    "source_ref": "https://www.stib-mivb.be/startpagina/klantendienst-/voordeeltarieven",
+    "last_verified": "2026-08-11",
+    "linked_fact_id": "fact_fr_senior_reduced_age"
   }
 ]

@@ -1,5 +1,6 @@
 import { loadMockAnswers } from "../loaders/artifactLoader";
-import type { Question, Language, Provider } from "@shared/schema";
+import type { Question, Provider } from "@shared/schema";
+import { OpenAIProvider } from "./openaiLlm";
 
 export interface LLMResponse {
   answerText: string;
@@ -40,7 +41,11 @@ export class MockLLMProvider {
   }
 }
 
-export function createLlmProvider(provider: Provider): MockLLMProvider {
+export function createLlmProvider(provider: Provider): MockLLMProvider | OpenAIProvider {
+  if (provider === "openai") {
+    return new OpenAIProvider();
+  }
+
   return new MockLLMProvider(provider);
 }
 

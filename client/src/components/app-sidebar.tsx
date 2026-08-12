@@ -104,9 +104,10 @@ export function AppSidebar() {
       <SidebarFooter className="border-t border-sidebar-border px-4 py-3">
         <div className="flex items-center gap-2">
           <div className="flex h-2 w-2 rounded-full bg-green-500" />
-          <span className="text-xs text-muted-foreground">
-            Mock LLM Provider Active
-          </span>
+          <div className="text-xs text-muted-foreground">
+            <div>Audited: GPT-4o-mini</div>
+            <div>Judge: GPT-4o</div>
+          </div>
         </div>
       </SidebarFooter>
     </Sidebar>

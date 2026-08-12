@@ -1,5 +1,21 @@
 import type { Question, Answer, InsertFinding, RiskTag } from "@shared/schema";
+import OpenAI from "openai";
 import { storage } from "../storage";
+
+const driftClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 30_000 });
+
+const DRIFT_JUDGE_PROMPT = `You are auditing whether an AI assistant gives CONSISTENT answers across languages. Below are its answers to the SAME factual question about STIB-MIVB, asked in French and Dutch.
+
+Compare ONLY the factual claim (ignore wording/style):
+  CONSISTENT   both give the same factual value, OR both decline/hedge similarly
+  DIVERGENT    they state different values, OR one gives a confident value while the other hedges/declines
+
+Your "reason" must state what each side claims, e.g. "NL says 70 EUR; FR hedges (October 2023) and gives no amount."
+
+Return ONLY JSON: {"consistency":"CONSISTENT|DIVERGENT","field":"<short label>","frValue":"<what FR claims or '-'>","nlValue":"<what NL claims or '-'>","reason":"..."}
+
+FRENCH ANSWER: {fr}
+DUTCH ANSWER: {nl}`;
 
 // Risk weights by tag
 const riskWeights: Record<RiskTag, number> = {
@@ -56,7 +72,7 @@ export async function detectDrift(
   for (const [factKey, data] of entries) {
     if (!data.fr || !data.nl || !data.question) continue;
 
-    const driftIssue = checkForDrift(
+    const driftIssue = await checkForDrift(
       data.fr.answerText,
       data.nl.answerText,
       data.question.topic
@@ -83,8 +99,9 @@ export async function detectDrift(
           frValue: driftIssue.frValue,
           nlValue: driftIssue.nlValue,
           field: driftIssue.field,
+          reason: driftIssue.reason,
         },
-        suggestedFix: `Align FR and NL values for ${driftIssue.field}: FR="${driftIssue.frValue}" vs NL="${driftIssue.nlValue}"`,
+        suggestedFix: `${driftIssue.reason || `Align FR and NL values for ${driftIssue.field}: FR="${driftIssue.frValue}" vs NL="${driftIssue.nlValue}"`}`,
       });
     }
   }
@@ -96,102 +113,35 @@ interface DriftIssue {
   field: string;
   frValue: string;
   nlValue: string;
+  reason?: string;
 }
 
-function checkForDrift(
+async function checkForDrift(
   frAnswer: string,
   nlAnswer: string,
   topic: string
-): DriftIssue | null {
-  // Extract key values from answers
-  const frValues = extractKeyValues(frAnswer);
-  const nlValues = extractKeyValues(nlAnswer);
+): Promise<DriftIssue | null> {
+  const prompt = DRIFT_JUDGE_PROMPT.replace("{fr}", frAnswer).replace("{nl}", nlAnswer);
 
-  // Check specific fields based on topic
-  switch (topic) {
-    case "contact":
-      // Check phone numbers
-      if (frValues.phone && nlValues.phone && frValues.phone !== nlValues.phone) {
-        return { field: "phone", frValue: frValues.phone, nlValue: nlValues.phone };
-      }
-      // Check URLs
-      if (frValues.url && nlValues.url) {
-        // URLs should have same base but different lang path is ok
-        const frBase = frValues.url.replace(/\/(fr|nl)\/?$/, "");
-        const nlBase = nlValues.url.replace(/\/(fr|nl)\/?$/, "");
-        if (frBase !== nlBase) {
-          return { field: "url", frValue: frValues.url, nlValue: nlValues.url };
-        }
-      }
-      break;
+  try {
+    const c = await driftClient.chat.completions.create({
+      model: "gpt-4o",
+      temperature: 0,
+      messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" },
+    });
 
-    case "hours":
-      // Check opening hours - times should be identical
-      if (frValues.times && nlValues.times && frValues.times !== nlValues.times) {
-        return { field: "hours", frValue: frValues.times, nlValue: nlValues.times };
-      }
-      break;
+    const v = JSON.parse(c.choices[0]?.message?.content || "{}");
+    if (v.consistency !== "DIVERGENT") return null;
 
-    case "deadline":
-      // Check deadline days - numbers should match
-      if (frValues.number && nlValues.number && frValues.number !== nlValues.number) {
-        return { field: "deadline_days", frValue: frValues.number, nlValue: nlValues.number };
-      }
-      break;
-
-    case "fees":
-      // Check amounts
-      if (frValues.amount && nlValues.amount && frValues.amount !== nlValues.amount) {
-        return { field: "amount", frValue: frValues.amount, nlValue: nlValues.amount };
-      }
-      break;
-
-    case "location":
-      // For addresses, postal code and street number should match
-      if (frValues.postalCode && nlValues.postalCode && frValues.postalCode !== nlValues.postalCode) {
-        return { field: "address", frValue: frValues.postalCode, nlValue: nlValues.postalCode };
-      }
-      break;
+    return {
+      field: v.field || topic,
+      frValue: v.frValue || "-",
+      nlValue: v.nlValue || "-",
+      reason: v.reason,
+    };
+  } catch (err) {
+    console.error(`[drift-judge] LLM call failed for topic "${topic}":`, err instanceof Error ? err.message : err);
+    return null;
   }
-
-  return null;
-}
-
-interface ExtractedValues {
-  phone?: string;
-  url?: string;
-  times?: string;
-  number?: string;
-  amount?: string;
-  postalCode?: string;
-}
-
-function extractKeyValues(text: string): ExtractedValues {
-  const values: ExtractedValues = {};
-
-  // Phone numbers
-  const phoneMatch = text.match(/\+\d{1,3}[\s-]?\d[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}/);
-  if (phoneMatch) values.phone = phoneMatch[0].replace(/\s/g, "");
-
-  // URLs
-  const urlMatch = text.match(/https?:\/\/[^\s\]]+/);
-  if (urlMatch) values.url = urlMatch[0];
-
-  // Time ranges (e.g., 08:30-16:30)
-  const timeMatch = text.match(/\d{1,2}:\d{2}[\s-]*(?:a|tot|-)[\s-]*\d{1,2}:\d{2}/i);
-  if (timeMatch) values.times = timeMatch[0].replace(/\s/g, "");
-
-  // Numbers (for deadlines)
-  const numberMatch = text.match(/(\d+)\s*(?:jours|dagen|days)/i);
-  if (numberMatch) values.number = numberMatch[1];
-
-  // Amounts
-  const amountMatch = text.match(/(\d+[,.]?\d*)\s*EUR/i);
-  if (amountMatch) values.amount = amountMatch[1];
-
-  // Postal codes
-  const postalMatch = text.match(/\b(\d{4})\b/);
-  if (postalMatch) values.postalCode = postalMatch[1];
-
-  return values;
 }

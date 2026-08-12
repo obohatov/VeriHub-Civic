@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import type { Question, Fact, InsertFinding } from "@shared/schema";
 import type { LLMResponse } from "./mockLlm";
+import { computeSeverity } from "./severity";
 
 const JUDGE_MODEL = "gpt-4o";
 
@@ -97,7 +98,7 @@ export async function judgeScoreAnswer(
       questionId: question.id,
       lang: question.lang,
       type: "incorrect",
-      severity: 8,
+      severity: computeSeverity(8, question.riskTag),
       evidenceJson: {
         topic: question.topic,
         expectedValue: fact.value,
@@ -113,7 +114,7 @@ export async function judgeScoreAnswer(
       questionId: question.id,
       lang: question.lang,
       type: "ungrounded",
-      severity: 5,
+      severity: computeSeverity(5, question.riskTag),
       evidenceJson: {
         topic: question.topic,
         factKey: fact.key,

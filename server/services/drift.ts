@@ -1,6 +1,7 @@
-import type { Question, Answer, InsertFinding, RiskTag } from "@shared/schema";
+import type { Question, Answer, InsertFinding } from "@shared/schema";
 import OpenAI from "openai";
 import { storage } from "../storage";
+import { computeSeverity } from "./severity";
 
 const driftClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 30_000 });
 
@@ -16,18 +17,6 @@ Return ONLY JSON: {"consistency":"CONSISTENT|DIVERGENT","field":"<short label>",
 
 FRENCH ANSWER: {fr}
 DUTCH ANSWER: {nl}`;
-
-// Risk weights by tag
-const riskWeights: Record<RiskTag, number> = {
-  deadline: 1.5,
-  eligibility: 1.4,
-  fees: 1.3,
-  contact: 1.2,
-  location: 1.1,
-  docs: 1.2,
-  hours: 1.0,
-  general: 0.8,
-};
 
 // Fields to check for drift
 const driftFields = [
@@ -79,13 +68,7 @@ export async function detectDrift(
     );
 
     if (driftIssue) {
-      const baseSeverity = 7;
-      const riskTag = data.question.riskTag;
-      const weight = riskTag in riskWeights ? riskWeights[riskTag as RiskTag] : 1.0;
-      const severity = Math.min(
-        10,
-        Math.round(baseSeverity * weight)
-      );
+      const severity = computeSeverity(7, data.question.riskTag);
 
       findings.push({
         auditRunId,

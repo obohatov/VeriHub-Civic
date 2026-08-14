@@ -208,6 +208,11 @@ export class DbStorage implements IStorage {
       lang: answer.lang,
       answerText: answer.answerText,
       citations: JSON.stringify(answer.citations),
+      verdictCorrectness: answer.verdictCorrectness ?? null,
+      verdictGroundedness: answer.verdictGroundedness ?? null,
+      verdictReason: answer.verdictReason ?? null,
+      provider: answer.provider ?? null,
+      runIndex: answer.runIndex ?? 0,
     });
     return { id, ...answer };
   }
@@ -454,6 +459,11 @@ export class DbStorage implements IStorage {
       lang: row.lang as Language,
       answerText: row.answerText,
       citations: JSON.parse(row.citations),
+      verdictCorrectness: row.verdictCorrectness as any,
+      verdictGroundedness: row.verdictGroundedness as any,
+      verdictReason: row.verdictReason,
+      provider: row.provider,
+      runIndex: row.runIndex,
     };
   }
 

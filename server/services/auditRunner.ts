@@ -24,21 +24,27 @@ export async function runAudit(auditRunId: string): Promise<void> {
     for (const question of questions) {
       const response = await llmProvider.getAnswer(question);
 
+      const scoringResult = auditRun.provider === "openai"
+        ? await judgeScoreAnswer(question, response, facts, auditRunId)
+        : scoreAnswer(question, response, facts, auditRunId);
+      
+      const v = scoringResult.verdict;
       const answerData: InsertAnswer = {
         auditRunId,
         questionId: question.id,
         lang: question.lang,
         answerText: response.answerText,
         citations: response.citations,
+        verdictCorrectness: v?.correctness ?? null,
+        verdictGroundedness: v?.groundedness ?? null,
+        verdictReason: v?.reason ?? null,
+        provider: auditRun.provider,
+        runIndex: 0,
       };
 
       const answer = await storage.createAnswer(answerData);
       answers.push(answer);
 
-      const scoringResult = auditRun.provider === "openai"
-        ? await judgeScoreAnswer(question, response, facts, auditRunId)
-        : scoreAnswer(question, response, facts, auditRunId);
-      
       for (const finding of scoringResult.findings) {
         await storage.createFinding(finding);
       }

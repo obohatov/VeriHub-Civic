@@ -1,8 +1,10 @@
 import type { Question, Fact, RiskTag, InsertFinding } from "@shared/schema";
 import type { LLMResponse } from "./mockLlm";
+import type { AnswerVerdict } from "./judgeLlm";
 import { getScoringRules } from "../loaders/artifactLoader";
 
 interface ScoringResult {
+  verdict: AnswerVerdict | null;
   findings: InsertFinding[];
 }
 
@@ -130,7 +132,7 @@ export function scoreAnswer(
     }
   }
 
-  return { findings };
+  return { verdict: null, findings };
 }
 
 function normalizeValue(value: string): string {

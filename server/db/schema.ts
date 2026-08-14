@@ -45,6 +45,11 @@ export const answersTable = pgTable("answers", {
   lang: text("lang").notNull(),
   answerText: text("answer_text").notNull(),
   citations: text("citations").notNull(),
+  verdictCorrectness: text("verdict_correctness"),
+  verdictGroundedness: text("verdict_groundedness"),
+  verdictReason: text("verdict_reason"),
+  provider: text("provider"),
+  runIndex: integer("run_index").default(0),
 });
 
 export const findingsTable = pgTable("findings", {

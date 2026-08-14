@@ -109,6 +109,11 @@ export const answerSchema = z.object({
   lang: languageSchema,
   answerText: z.string(),
   citations: z.array(z.string()),
+  verdictCorrectness: z.enum(["CORRECT","INCORRECT","NOT_STATED","SKIPPED"]).nullable().optional(),
+  verdictGroundedness: z.enum(["GROUNDED","UNSUPPORTED"]).nullable().optional(),
+  verdictReason: z.string().nullable().optional(),
+  provider: z.string().nullable().optional(),
+  runIndex: z.number().nullable().optional(),
 });
 export type Answer = z.infer<typeof answerSchema>;
 

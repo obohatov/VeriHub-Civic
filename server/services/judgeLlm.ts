@@ -46,6 +46,12 @@ interface JudgeVerdict {
   reason: string;
 }
 
+export interface AnswerVerdict {
+  correctness: "CORRECT" | "INCORRECT" | "NOT_STATED" | "SKIPPED";
+  groundedness: "GROUNDED" | "UNSUPPORTED" | null;
+  reason: string | null;
+}
+
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 30_000 });
 
 async function judgeOne(question: Question, answerText: string, expected: string): Promise<JudgeVerdict> {
@@ -78,17 +84,27 @@ export async function judgeScoreAnswer(
   response: LLMResponse,
   facts: Fact[],
   auditRunId: string
-): Promise<{ findings: InsertFinding[] }> {
+): Promise<{ verdict: AnswerVerdict; findings: InsertFinding[] }> {
   const findings: InsertFinding[] = [];
   const expectedFacts = facts.filter(
     (f) => question.expectedFactKeys.includes(f.key) && f.lang === question.lang
   );
 
-  if (expectedFacts.length === 0) return { findings };
+  if (expectedFacts.length === 0) {
+    return {
+      verdict: { correctness: "SKIPPED", groundedness: null, reason: "no expected fact for this question" },
+      findings: [],
+    };
+  }
   const fact = expectedFacts[0];
 
   const exact = response.answerText.toLowerCase().includes(fact.value.toLowerCase());
-  if (exact) return { findings };
+  if (exact) {
+    return {
+      verdict: { correctness: "CORRECT", groundedness: "GROUNDED", reason: "exact match with official value" },
+      findings: [],
+    };
+  }
 
   const verdict = await judgeOne(question, response.answerText, fact.value);
 
@@ -125,5 +141,8 @@ export async function judgeScoreAnswer(
     });
   }
 
-  return { findings };
+  return {
+    verdict: { correctness: verdict.correctness, groundedness: verdict.groundedness, reason: verdict.reason },
+    findings,
+  };
 }

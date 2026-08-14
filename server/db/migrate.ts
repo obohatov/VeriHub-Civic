@@ -71,6 +71,11 @@ export async function runMigrations(): Promise<void> {
       lang TEXT NOT NULL,
       answer_text TEXT NOT NULL,
       citations TEXT NOT NULL,
+      verdict_correctness TEXT,
+      verdict_groundedness TEXT,
+      verdict_reason TEXT,
+      provider TEXT,
+      run_index INTEGER DEFAULT 0,
       FOREIGN KEY (audit_run_id) REFERENCES audit_runs(id),
       FOREIGN KEY (question_id) REFERENCES questions(id)
     )

@@ -2,21 +2,21 @@
 
 > **Regression testing for public information in the AI era.**
 
-VeriHub audits what public LLMs (ChatGPT, Gemini, Claude) say about an organization, checking their answers against the organization's **official sources** — across languages, providers, and repeated runs. The live demo audits a public model on **STIB-MIVB** (the Brussels public-transport operator) in **French and Dutch**.
+VeriHub audits what public LLMs (ChatGPT, Gemini, Claude) say about an organization, checking their answers against the organization's **official sources** — across languages, providers, and repeated runs. The live demo audits a public model on **STIB-MIVB** (the Brussels public-transport operator) in **French, Dutch, and English**.
 
 ## Why this matters
 
 LLM answers scale. A single wrong fare, outdated fine amount, or missing deadline can propagate across thousands of interactions and cause real harm: incorrect payments, missed deadlines, extra helpdesk load, and loss of trust. Organizations have no systematic way to know *what the AI says about them* — VeriHub turns "the AI said something wrong" into a measurable, sourced audit.
 
-Crucially, the failures are not just wrong facts. The same model can answer the **same question differently in French and Dutch**, and differently **from one run to the next** — inconsistencies a single-shot, single-language check never sees. VeriHub measures all three.
+Crucially, the failures are not just wrong facts. The same model can answer the **same question differently across French, Dutch, and English**, and differently **from one run to the next** — inconsistencies a single-shot, single-language check never sees. VeriHub measures all of them.
 
 ## What the demo does
 
-1. **Facts & Sources Hub** — verified facts drawn from official STIB-MIVB pages (FR/NL), each with its source URL and verification date.
-2. **Question set** — paired FR/NL questions, one per fact (fares, fines, MOBIB card, lost & found, school passes).
+1. **Facts & Sources Hub** — verified facts drawn from official STIB-MIVB pages, each with its source URL and verification date. Ground truth is the value the organization declares; in this pilot the French version is used as the reference (French is STIB's primary publication language), with Dutch and English audited against it.
+2. **Question set** — the same question in FR/NL/EN, one per fact (fares, fines, MOBIB card, lost & found, school passes).
 3. **Audit run** — a real public model (`gpt-4o-mini`) answers every question, with no access to the sources — exactly as a citizen would ask it. Each question is asked **N times** (default 3) to expose run-to-run instability.
 4. **LLM judge** — a stronger model (`gpt-4o`) compares each answer to the official verified value and returns a per-answer verdict — *correct / incorrect / not-stated* plus a groundedness axis — with a human-readable reason (e.g. *"Answer says 7.60 EUR but the official value is 8.50 EUR"*).
-5. **Cross-language drift** — an LLM judge compares the FR and NL answers to the same fact and flags where the model tells citizens different things depending on the language they ask in.
+5. **Cross-language drift** — an LLM judge compares the FR / NL / EN answers to the same fact *against the official reference value*, flagging which languages match the truth and which diverge — where the model tells citizens different things depending on the language they ask in.
 6. **Instability** — across the repeated runs, answers whose verdicts disagree (or whose stated values differ) are flagged: the model gave the same citizen different answers to the same question.
 7. **Dashboard** — findings by type, severity, and language.
 
@@ -28,25 +28,25 @@ The judge replaces brittle regex scoring: instead of matching strings, it reason
 |---|---|---|
 | **Correctness** | Does the answer contradict the official value? | LLM judge vs verified fact (hybrid: exact-match precheck → judge) |
 | **Groundedness** | Does the answer give a concrete, sourced value at all? | LLM judge |
-| **Cross-language drift** | Does the model say different things in FR vs NL? | LLM judge over the FR/NL answer pair |
+| **Cross-language drift** | Does the model say different things in FR / NL / EN? | LLM judge over all language answers, scored against the official reference value |
 | **Instability** | Does the model answer the same question differently across repeats? | Verdict disagreement across N runs; LLM tie-break when verdicts agree but stated values differ |
 
-## Latest audit results (STIB-MIVB, FR/NL, N=3)
+## Latest audit results (STIB-MIVB, FR/NL/EN, N=3)
 
-A single audit of `gpt-4o-mini` over 32 paired FR/NL questions, each asked 3 times:
+A single audit of `gpt-4o-mini` over 48 questions (16 facts × 3 languages), each asked 3 times — 144 model calls:
 
 | Finding type | Count |
 |---|---|
-| **Incorrect** (contradicts the official value) | 12 |
-| **Ungrounded** (no concrete value / no source) | 16 |
-| **Drift** (FR and NL answers disagree) | 7 |
-| **Instability** (answer changes across repeats) | 9 |
+| **Incorrect** (contradicts the official value) | 24 |
+| **Ungrounded** (no concrete value / no source) | 19 |
+| **Drift** (languages disagree vs the reference) | 13 |
+| **Instability** (answer changes across repeats) | 16 |
 
 Representative findings:
 
-- **Instability — MOBIB card validity:** asked three times in Dutch, the model answered *"tien jaar" (10 years), "5 jaar", "5 jaar"* — the official value is 5 years, so one in three citizens would get the wrong answer.
-- **Drift — MOBIB card validity:** the *same* fact also drifts across languages — FR says *5 ans*, NL says *10 jaar*. The model is inconsistent both between languages and between runs.
-- **Drift — daily fare cap:** FR claims a maximum daily charge of *7.50 EUR*; NL says there is *no maximum per day* — a contradiction only visible when both languages are compared.
+- **Drift — daily fare cap:** the official value is *8.50 EUR*, but the model quoted a **different wrong price in each language** — FR *7.50 EUR*, NL *5 EUR per ride*, EN *7 EUR*. Three languages, three wrong answers, none matching the source.
+- **Drift — MOBIB card validity:** reference *5 years* — FR answered *5 ans* (correct), EN answered *10 years* (wrong), NL hedged. The judge pinpoints which language matches the truth and which diverges, not just that they differ.
+- **Instability — MOBIB card validity:** asked three times, the model's verdicts disagreed across repeats — the same citizen would get a different answer depending on when they asked.
 - **Incorrect — fine amount:** the model answered *70 EUR*; the official first-offence fine is *107 EUR*.
 
 ## Judge calibration

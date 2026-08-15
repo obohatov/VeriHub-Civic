@@ -180,7 +180,7 @@ export async function registerRoutes(
       const auditRun = await storage.createAuditRun(parsed.data);
 
       // Run the audit asynchronously
-      runAudit(auditRun.id).catch((error) => {
+      runAudit(auditRun.id, parsed.data.repetitions ?? 3).catch((error) => {
         console.error("Audit run failed:", error);
       });
 

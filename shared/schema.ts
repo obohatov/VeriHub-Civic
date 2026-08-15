@@ -22,7 +22,8 @@ export const findingTypeSchema = z.enum([
   "incorrect",
   "outdated",
   "ungrounded", 
-  "drift"
+  "drift",
+  "instability"
 ]);
 export type FindingType = z.infer<typeof findingTypeSchema>;
 
@@ -98,6 +99,7 @@ export const insertAuditRunSchema = z.object({
   questionSetId: z.string(),
   provider: providerSchema.optional().default("mock-baseline"),
   baselineRunId: z.string().nullable().optional(),
+  repetitions: z.number().int().min(1).max(10).optional().default(3),
 });
 export type InsertAuditRun = z.infer<typeof insertAuditRunSchema>;
 

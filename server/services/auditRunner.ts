@@ -3,9 +3,10 @@ import { createLlmProvider } from "./mockLlm";
 import { scoreAnswer } from "./scoring";
 import { judgeScoreAnswer } from "./judgeLlm";
 import { detectDrift } from "./drift";
+import { detectInstability } from "./instability";
 import type { AuditRun, Answer, InsertAnswer, Provider } from "@shared/schema";
 
-export async function runAudit(auditRunId: string): Promise<void> {
+export async function runAudit(auditRunId: string, repetitions = 3): Promise<void> {
   const auditRun = await storage.getAuditRun(auditRunId);
   if (!auditRun) {
     throw new Error(`Audit run not found: ${auditRunId}`);
@@ -22,37 +23,47 @@ export async function runAudit(auditRunId: string): Promise<void> {
     const answers: Answer[] = [];
 
     for (const question of questions) {
-      const response = await llmProvider.getAnswer(question);
+      for (let rep = 0; rep < repetitions; rep++) {
+        const response = await llmProvider.getAnswer(question);
 
-      const scoringResult = auditRun.provider === "openai"
-        ? await judgeScoreAnswer(question, response, facts, auditRunId)
-        : scoreAnswer(question, response, facts, auditRunId);
-      
-      const v = scoringResult.verdict;
-      const answerData: InsertAnswer = {
-        auditRunId,
-        questionId: question.id,
-        lang: question.lang,
-        answerText: response.answerText,
-        citations: response.citations,
-        verdictCorrectness: v?.correctness ?? null,
-        verdictGroundedness: v?.groundedness ?? null,
-        verdictReason: v?.reason ?? null,
-        provider: auditRun.provider,
-        runIndex: 0,
-      };
+        const scoringResult = auditRun.provider === "openai"
+          ? await judgeScoreAnswer(question, response, facts, auditRunId)
+          : scoreAnswer(question, response, facts, auditRunId);
 
-      const answer = await storage.createAnswer(answerData);
-      answers.push(answer);
+        const v = scoringResult.verdict;
+        const answerData: InsertAnswer = {
+          auditRunId,
+          questionId: question.id,
+          lang: question.lang,
+          answerText: response.answerText,
+          citations: response.citations,
+          verdictCorrectness: v?.correctness ?? null,
+          verdictGroundedness: v?.groundedness ?? null,
+          verdictReason: v?.reason ?? null,
+          provider: auditRun.provider,
+          runIndex: rep,
+        };
 
-      for (const finding of scoringResult.findings) {
-        await storage.createFinding(finding);
+        const answer = await storage.createAnswer(answerData);
+        answers.push(answer);
+
+        if (rep === 0) {
+          for (const finding of scoringResult.findings) {
+            await storage.createFinding(finding);
+          }
+        }
       }
     }
 
-    const driftResult = await detectDrift(auditRunId, answers);
-    
+    const primaryAnswers = answers.filter((answer) => answer.runIndex === 0);
+    const driftResult = await detectDrift(auditRunId, primaryAnswers);
+
     for (const finding of driftResult.findings) {
+      await storage.createFinding(finding);
+    }
+
+    const instabilityResult = await detectInstability(auditRunId, answers);
+    for (const finding of instabilityResult.findings) {
       await storage.createFinding(finding);
     }
 

@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { FindingType } from "@/lib/types";
-import { AlertCircle, Clock, FileQuestion, GitCompare } from "lucide-react";
+import { AlertCircle, Clock, FileQuestion, GitCompare, TriangleAlert } from "lucide-react";
 
 interface FindingBadgeProps {
   type: FindingType;
@@ -31,6 +31,11 @@ const findingConfig: Record<
     label: "FR/NL Drift",
     variant: "bg-chart-1/15 text-chart-1 border-chart-1/30",
     icon: GitCompare,
+  },
+  instability: {
+    label: "Instability",
+    variant: "bg-amber-500/15 text-amber-600 border-amber-500/30",
+    icon: TriangleAlert,
   },
 };
 

@@ -10,6 +10,7 @@ interface LanguageBadgeProps {
 const langConfig: Record<Language, { label: string; flag: string }> = {
   fr: { label: "French", flag: "FR" },
   nl: { label: "Dutch", flag: "NL" },
+  en: { label: "English", flag: "EN" },
 };
 
 export function LanguageBadge({ lang, className }: LanguageBadgeProps) {

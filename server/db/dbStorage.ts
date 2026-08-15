@@ -266,6 +266,7 @@ export class DbStorage implements IStorage {
     const findingsByLang: Record<Language, number> = {
       fr: 0,
       nl: 0,
+      en: 0,      
     };
 
     allFindings.forEach((f) => {

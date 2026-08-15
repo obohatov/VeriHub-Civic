@@ -5,29 +5,21 @@ import { computeSeverity } from "./severity";
 
 const driftClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 30_000 });
 
-const DRIFT_JUDGE_PROMPT = `You are auditing whether an AI assistant gives CONSISTENT answers across languages. Below are its answers to the SAME factual question about STIB-MIVB, asked in French and Dutch.
+const DRIFT_JUDGE_PROMPT = `You are auditing whether an AI assistant gives CONSISTENT answers across languages about STIB-MIVB services. Below is the official reference value and the model's answers in multiple languages to the SAME question.
 
 Compare ONLY the factual claim (ignore wording/style):
-  CONSISTENT   both give the same factual value, OR both decline/hedge similarly
-  DIVERGENT    they state different values, OR one gives a confident value while the other hedges/declines
+  CONSISTENT   all languages state the same factual value as the reference, OR all decline/hedge similarly
+  DIVERGENT    some languages diverge from the reference value OR from each other
 
-Your "reason" must state what each side claims, e.g. "NL says 70 EUR; FR hedges (October 2023) and gives no amount."
+Your "reason" must state what the reference requires and which languages match or diverge.
 
-Return ONLY JSON: {"consistency":"CONSISTENT|DIVERGENT","field":"<short label>","frValue":"<what FR claims or '-'>","nlValue":"<what NL claims or '-'>","reason":"..."}
+REFERENCE VALUE: {reference}
+TOPIC: {topic}
 
-FRENCH ANSWER: {fr}
-DUTCH ANSWER: {nl}`;
+ANSWERS BY LANGUAGE:
+{answersFormatted}
 
-// Fields to check for drift
-const driftFields = [
-  "appointment_link",
-  "phone",
-  "address",
-  "deadline_days",
-  "hours",
-  "url",
-  "email",
-];
+Return ONLY JSON: {"consistency":"CONSISTENT|DIVERGENT","perLang":{"<lang>":"<claim or '-'>"},"reason":"<explanation>"}`;
 
 interface DriftResult {
   findings: InsertFinding[];
@@ -39,19 +31,26 @@ export async function detectDrift(
 ): Promise<DriftResult> {
   const findings: InsertFinding[] = [];
   const questions = await storage.getQuestions();
+  const facts = await storage.getFacts();
+
+  // Filter to primary answers (run_index === 0)
+  const primaryAnswers = answers.filter((a) => a.runIndex === 0);
 
   // Group answers by expected fact key
-  const answersByFactKey = new Map<string, { fr?: Answer; nl?: Answer; question?: Question }>();
+  const answersByFactKey = new Map<
+    string,
+    { answers: Answer[]; question?: Question }
+  >();
 
-  for (const answer of answers) {
+  for (const answer of primaryAnswers) {
     const question = questions.find((q) => q.id === answer.questionId);
     if (!question) continue;
 
     const factKey = question.expectedFactKeys[0];
     if (!factKey) continue;
 
-    const existing = answersByFactKey.get(factKey) || {};
-    existing[question.lang] = answer;
+    const existing = answersByFactKey.get(factKey) || { answers: [] };
+    existing.answers.push(answer);
     existing.question = question;
     answersByFactKey.set(factKey, existing);
   }
@@ -59,15 +58,28 @@ export async function detectDrift(
   // Check each fact key for drift
   const entries = Array.from(answersByFactKey.entries());
   for (const [factKey, data] of entries) {
-    if (!data.fr || !data.nl || !data.question) continue;
+    // Skip groups with fewer than 2 language answers
+    if (data.answers.length < 2 || !data.question) continue;
+
+    // Look up the FR fact as ground-truth reference
+    const refFact = facts.find(
+      (f) => f.key === factKey && f.lang === "fr"
+    );
+    if (!refFact) continue;
+
+    // Build array of {lang, answerText}
+    const langAnswers = data.answers.map((a) => ({
+      lang: a.lang,
+      answerText: a.answerText,
+    }));
 
     const driftIssue = await checkForDrift(
-      data.fr.answerText,
-      data.nl.answerText,
+      langAnswers,
+      refFact.value,
       data.question.topic
     );
 
-    if (driftIssue) {
+    if (driftIssue && driftIssue.consistency === "DIVERGENT") {
       const severity = computeSeverity(7, data.question.riskTag);
 
       findings.push({
@@ -79,12 +91,11 @@ export async function detectDrift(
         evidenceJson: {
           topic: data.question.topic,
           factKey,
-          frValue: driftIssue.frValue,
-          nlValue: driftIssue.nlValue,
-          field: driftIssue.field,
+          reference: refFact.value,
+          perLang: driftIssue.perLang,
           reason: driftIssue.reason,
         },
-        suggestedFix: `${driftIssue.reason || `Align FR and NL values for ${driftIssue.field}: FR="${driftIssue.frValue}" vs NL="${driftIssue.nlValue}"`}`,
+        suggestedFix: `Ensure all languages align with reference value "${refFact.value}": ${driftIssue.reason}`,
       });
     }
   }
@@ -93,18 +104,23 @@ export async function detectDrift(
 }
 
 interface DriftIssue {
-  field: string;
-  frValue: string;
-  nlValue: string;
-  reason?: string;
+  consistency: "CONSISTENT" | "DIVERGENT";
+  perLang: Record<string, string>;
+  reason: string;
 }
 
 async function checkForDrift(
-  frAnswer: string,
-  nlAnswer: string,
+  answers: Array<{ lang: string; answerText: string }>,
+  referenceValue: string,
   topic: string
 ): Promise<DriftIssue | null> {
-  const prompt = DRIFT_JUDGE_PROMPT.replace("{fr}", frAnswer).replace("{nl}", nlAnswer);
+  const answersFormatted = answers
+    .map((a) => `${a.lang.toUpperCase()}: ${a.answerText}`)
+    .join("\n");
+
+  const prompt = DRIFT_JUDGE_PROMPT.replace("{reference}", referenceValue)
+    .replace("{topic}", topic)
+    .replace("{answersFormatted}", answersFormatted);
 
   try {
     const c = await driftClient.chat.completions.create({
@@ -115,13 +131,11 @@ async function checkForDrift(
     });
 
     const v = JSON.parse(c.choices[0]?.message?.content || "{}");
-    if (v.consistency !== "DIVERGENT") return null;
 
     return {
-      field: v.field || topic,
-      frValue: v.frValue || "-",
-      nlValue: v.nlValue || "-",
-      reason: v.reason,
+      consistency: v.consistency || "CONSISTENT",
+      perLang: v.perLang || {},
+      reason: v.reason || "",
     };
   } catch (err) {
     console.error(`[drift-judge] LLM call failed for topic "${topic}":`, err instanceof Error ? err.message : err);

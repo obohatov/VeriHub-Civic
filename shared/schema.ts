@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // Language enum
-export const languageSchema = z.enum(["fr", "nl"]);
+export const languageSchema = z.enum(["fr", "nl", "en"]);
 export type Language = z.infer<typeof languageSchema>;
 
 // Risk tags for questions

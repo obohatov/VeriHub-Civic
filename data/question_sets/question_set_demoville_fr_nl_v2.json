@@ -3,7 +3,8 @@
   "title": "STIB-MIVB — Public transport info audit (FR/NL) v1",
   "languages": [
     "fr",
-    "nl"
+    "nl",
+    "en"
   ],
   "topics": [
     "fares",
@@ -330,6 +331,166 @@
       "topic": "eligibility",
       "risk_tag": "eligibility",
       "text": "Vanaf welke leeftijd heb je recht op een seniorentarief bij de MIVB?",
+      "expected_fact_keys": [
+        "senior_reduced_age"
+      ]
+    },
+    {
+      "id": "q_en_001",
+      "lang": "en",
+      "topic": "fares",
+      "risk_tag": "deadline",
+      "text": "How long does a STIB transport ticket remain valid after purchase?",
+      "expected_fact_keys": [
+        "ticket_validity"
+      ]
+    },
+    {
+      "id": "q_en_002",
+      "lang": "en",
+      "topic": "fares",
+      "risk_tag": "general",
+      "text": "For how long can I make connections with the same STIB ticket?",
+      "expected_fact_keys": [
+        "connection_window"
+      ]
+    },
+    {
+      "id": "q_en_003",
+      "lang": "en",
+      "topic": "fares",
+      "risk_tag": "fees",
+      "text": "What is the maximum amount charged per day with contactless payment on STIB?",
+      "expected_fact_keys": [
+        "day_cap_eur"
+      ]
+    },
+    {
+      "id": "q_en_004",
+      "lang": "en",
+      "topic": "mobib",
+      "risk_tag": "general",
+      "text": "How long is a MOBIB card valid?",
+      "expected_fact_keys": [
+        "mobib_validity"
+      ]
+    },
+    {
+      "id": "q_en_005",
+      "lang": "en",
+      "topic": "mobib",
+      "risk_tag": "fees",
+      "text": "How much does a reloadable MOBIB card cost?",
+      "expected_fact_keys": [
+        "mobib_card_price"
+      ]
+    },
+    {
+      "id": "q_en_006",
+      "lang": "en",
+      "topic": "mobib",
+      "risk_tag": "general",
+      "text": "How many transport tickets can be loaded onto a MOBIB card?",
+      "expected_fact_keys": [
+        "mobib_capacity"
+      ]
+    },
+    {
+      "id": "q_en_007",
+      "lang": "en",
+      "topic": "fines",
+      "risk_tag": "fees",
+      "text": "What is the STIB fine for not having a valid transport ticket?",
+      "expected_fact_keys": [
+        "fine_first"
+      ]
+    },
+    {
+      "id": "q_en_008",
+      "lang": "en",
+      "topic": "fines",
+      "risk_tag": "fees",
+      "text": "What is the amount of a second STIB fine received within 24 months?",
+      "expected_fact_keys": [
+        "fine_second_24m"
+      ]
+    },
+    {
+      "id": "q_en_009",
+      "lang": "en",
+      "topic": "fines",
+      "risk_tag": "fees",
+      "text": "What fine applies if I use someone else's MOBIB card?",
+      "expected_fact_keys": [
+        "fine_misuse_mobib"
+      ]
+    },
+    {
+      "id": "q_en_010",
+      "lang": "en",
+      "topic": "fines",
+      "risk_tag": "fees",
+      "text": "What is the fine if I have a valid season ticket but did not validate it?",
+      "expected_fact_keys": [
+        "fine_unvalidated"
+      ]
+    },
+    {
+      "id": "q_en_011",
+      "lang": "en",
+      "topic": "lost",
+      "risk_tag": "fees",
+      "text": "How much does a duplicate of a personal MOBIB card cost?",
+      "expected_fact_keys": [
+        "duplicate_card_cost"
+      ]
+    },
+    {
+      "id": "q_en_012",
+      "lang": "en",
+      "topic": "lost",
+      "risk_tag": "deadline",
+      "text": "Within how many days is a duplicate card ordered online delivered by post?",
+      "expected_fact_keys": [
+        "duplicate_delivery_days"
+      ]
+    },
+    {
+      "id": "q_en_013",
+      "lang": "en",
+      "topic": "school",
+      "risk_tag": "fees",
+      "text": "How much does the STIB school season ticket cost per year?",
+      "expected_fact_keys": [
+        "school_ticket_price"
+      ]
+    },
+    {
+      "id": "q_en_014",
+      "lang": "en",
+      "topic": "fares",
+      "risk_tag": "fees",
+      "text": "What special fare applies from Brussels Airport (Airport City)?",
+      "expected_fact_keys": [
+        "airport_fare"
+      ]
+    },
+    {
+      "id": "q_en_015",
+      "lang": "en",
+      "topic": "fares",
+      "risk_tag": "fees",
+      "text": "How much does a digital Brupass ticket for one journey cost?",
+      "expected_fact_keys": [
+        "digital_1journey"
+      ]
+    },
+    {
+      "id": "q_en_016",
+      "lang": "en",
+      "topic": "eligibility",
+      "risk_tag": "eligibility",
+      "text": "From what age are you entitled to a reduced senior fare on STIB?",
       "expected_fact_keys": [
         "senior_reduced_age"
       ]

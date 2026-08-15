@@ -286,5 +286,149 @@
     "source_ref": "https://www.stib-mivb.be/startpagina/klantendienst-/voordeeltarieven",
     "last_verified": "2026-08-11",
     "linked_fact_id": "fact_fr_senior_reduced_age"
+  },
+  {
+    "id": "fact_en_ticket_validity",
+    "key": "ticket_validity",
+    "lang": "en",
+    "value": "18 months",
+    "source_ref": "https://www.stib-mivb.be/accueil/support-client/tarifs-et-titres-de-transport",
+    "last_verified": "2026-08-15",
+    "linked_fact_id": null
+  },
+  {
+    "id": "fact_en_connection_window",
+    "key": "connection_window",
+    "lang": "en",
+    "value": "60 minutes",
+    "source_ref": "https://www.stib-mivb.be/accueil/support-client/tarifs-et-titres-de-transport",
+    "last_verified": "2026-08-15",
+    "linked_fact_id": null
+  },
+  {
+    "id": "fact_en_day_cap_eur",
+    "key": "day_cap_eur",
+    "lang": "en",
+    "value": "8.50 EUR",
+    "source_ref": "https://www.stib-mivb.be/accueil/support-client/tarifs-et-titres-de-transport",
+    "last_verified": "2026-08-15",
+    "linked_fact_id": null
+  },
+  {
+    "id": "fact_en_mobib_validity",
+    "key": "mobib_validity",
+    "lang": "en",
+    "value": "5 years",
+    "source_ref": "https://www.stib-mivb.be/acheter/tous-vos-deplacements-avec-la-carte-mobib",
+    "last_verified": "2026-08-15",
+    "linked_fact_id": null
+  },
+  {
+    "id": "fact_en_mobib_card_price",
+    "key": "mobib_card_price",
+    "lang": "en",
+    "value": "6 EUR",
+    "source_ref": "https://www.stib-mivb.be/acheter/tous-vos-deplacements-avec-la-carte-mobib",
+    "last_verified": "2026-08-15",
+    "linked_fact_id": null
+  },
+  {
+    "id": "fact_en_mobib_capacity",
+    "key": "mobib_capacity",
+    "lang": "en",
+    "value": "8 tickets",
+    "source_ref": "https://www.stib-mivb.be/acheter/tous-vos-deplacements-avec-la-carte-mobib",
+    "last_verified": "2026-08-15",
+    "linked_fact_id": null
+  },
+  {
+    "id": "fact_en_fine_first",
+    "key": "fine_first",
+    "lang": "en",
+    "value": "107 EUR",
+    "source_ref": "https://www.stib-mivb.be/accueil/support-client/amende-et-infractions-",
+    "last_verified": "2026-08-15",
+    "linked_fact_id": null
+  },
+  {
+    "id": "fact_en_fine_second_24m",
+    "key": "fine_second_24m",
+    "lang": "en",
+    "value": "214 EUR",
+    "source_ref": "https://www.stib-mivb.be/accueil/support-client/amende-et-infractions-",
+    "last_verified": "2026-08-15",
+    "linked_fact_id": null
+  },
+  {
+    "id": "fact_en_fine_misuse_mobib",
+    "key": "fine_misuse_mobib",
+    "lang": "en",
+    "value": "408 EUR",
+    "source_ref": "https://www.stib-mivb.be/accueil/support-client/amende-et-infractions-",
+    "last_verified": "2026-08-15",
+    "linked_fact_id": null
+  },
+  {
+    "id": "fact_en_fine_unvalidated",
+    "key": "fine_unvalidated",
+    "lang": "en",
+    "value": "10 EUR",
+    "source_ref": "https://www.stib-mivb.be/accueil/support-client/amende-et-infractions-",
+    "last_verified": "2026-08-15",
+    "linked_fact_id": null
+  },
+  {
+    "id": "fact_en_duplicate_card_cost",
+    "key": "duplicate_card_cost",
+    "lang": "en",
+    "value": "10 EUR",
+    "source_ref": "https://www.stib-mivb.be/accueil/support-client/objets-perdus",
+    "last_verified": "2026-08-15",
+    "linked_fact_id": null
+  },
+  {
+    "id": "fact_en_duplicate_delivery_days",
+    "key": "duplicate_delivery_days",
+    "lang": "en",
+    "value": "5 working days",
+    "source_ref": "https://www.stib-mivb.be/accueil/support-client/objets-perdus",
+    "last_verified": "2026-08-15",
+    "linked_fact_id": null
+  },
+  {
+    "id": "fact_en_school_ticket_price",
+    "key": "school_ticket_price",
+    "lang": "en",
+    "value": "12 EUR/year",
+    "source_ref": "https://www.stib-mivb.be/acheter/abonnements-scolaires-pour-eleves-et-etudiants",
+    "last_verified": "2026-08-15",
+    "linked_fact_id": null
+  },
+  {
+    "id": "fact_en_airport_fare",
+    "key": "airport_fare",
+    "lang": "en",
+    "value": "7.90 EUR",
+    "source_ref": "https://www.stib-mivb.be/acheter/votre-carte-bancaire-est-votre-ticket",
+    "last_verified": "2026-08-15",
+    "linked_fact_id": null
+  },
+  {
+    "id": "fact_en_digital_1journey",
+    "key": "digital_1journey",
+    "lang": "en",
+    "value": "2.70 EUR",
+    "source_ref": "https://www.stib-mivb.be/acheter/le-ticket-digital",
+    "last_verified": "2026-08-15",
+    "linked_fact_id": null
+  },
+  {
+    "id": "fact_en_senior_reduced_age",
+    "key": "senior_reduced_age",
+    "lang": "en",
+    "value": "65 years or older",
+    "source_ref": "https://www.stib-mivb.be/accueil/support-client/tarifs-preferentiels",
+    "last_verified": "2026-08-15",
+    "linked_fact_id": null
   }
 ]

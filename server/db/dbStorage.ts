@@ -253,6 +253,7 @@ export class DbStorage implements IStorage {
       outdated: 0,
       ungrounded: 0,
       drift: 0,
+      instability: 0,
     };
 
     const findingsBySeverity = {
@@ -304,6 +305,7 @@ export class DbStorage implements IStorage {
       outdated: 0,
       ungrounded: 0,
       drift: 0,
+      instability: 0,
     };
 
     const currentCounts: Record<FindingType, number> = {
@@ -311,6 +313,7 @@ export class DbStorage implements IStorage {
       outdated: 0,
       ungrounded: 0,
       drift: 0,
+      instability: 0,
     };
 
     baselineFindings.forEach((f) => baselineCounts[f.type]++);
@@ -331,7 +334,7 @@ export class DbStorage implements IStorage {
       (f) => !baselineKeys.has(`${f.questionId}-${f.type}-${f.lang}`)
     );
 
-    const improvements = (["incorrect", "outdated", "ungrounded", "drift"] as FindingType[]).map(
+    const improvements = (["incorrect", "outdated", "ungrounded", "drift", "instability"] as FindingType[]).map(
       (type) => ({
         type,
         change: currentCounts[type] - baselineCounts[type],

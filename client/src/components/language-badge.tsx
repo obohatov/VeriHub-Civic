@@ -15,7 +15,7 @@ const langConfig: Record<Language, { label: string; flag: string }> = {
 
 export function LanguageBadge({ lang, className }: LanguageBadgeProps) {
   const config = langConfig[lang];
-
+  if (!config) return null;
   return (
     <Badge
       variant="secondary"
